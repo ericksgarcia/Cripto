@@ -57,3 +57,19 @@ ML (LightGBM/GRU) em 1h: sem edge líquido (fase 1).
 
 ## Antes de operar de verdade
 Paper trading ≥ 3 meses na testnet; execução a partir de região permitida (api.binance.com dá 451 aqui); limites de risco/kill-switch.
+
+---
+# Fase 3 — teste das 5 estratégias sugeridas
+Scripts: `download3.py` (futuros trimestrais BTC/ETH + perp 1h), `research4.py` (cash&carry e funding), `research5.py` (StatArb).
+
+| # | Estratégia | Resultado (líquido de custos) |
+|---|---|---|
+| 1 | Funding delta-neutro (spot long + perp short) | BTC+ETH: 6,4% a.a. (capital 2x notional) a ~11% (spot cheio + 20% margem); 25 pares: 5,3% / 9,0%. Vol ~1%, maxDD -1,4% a -4%. Decaiu: 2021 +18%, 2023 +4%, 2025 +2,5%, 2026 +0,9% (base 50/50). Top-N por funding piorou (0–4%). |
+| 2 | MEV / flash loans | **Não testável** (exige nó on-chain, mempool, builders). Sandwich = front-running de outros usuários; não implementar. |
+| 3 | StatArb / pairs (ADF walk-forward, 25 perps) | Sharpe 0,52, CAGR 9,4% (2021-22: 24%; 2023-26: 2,4%, Sharpe 0,28). Placebo de pares aleatórios: Sharpe -0,16 → seleção agrega, mas edge decaiu. |
+| 4 | HFT / market making | **Não testável** sem order book L2/fila de ordens e infraestrutura de baixa latência. |
+| 5 | Cash & carry (futuros trimestrais, hold até vencimento) | BTC 7,4% a.a. (6,1% sobre capital 1,2x), ETH 6,1%; 23 ciclos, só 2 com retorno ≤0. Basis na entrada: 15% (2021), 2,4% (2022), 8% (2023), 14% (2024), 4,8% (2025), 1,8% (2026). |
+
+Ressalvas: basis pode alargar até ~5-6% intra-vida (risco de margem); basis perp-spot em 1h chegou a ±2,5% (BTC/ETH) e -24% (SOL);
+convergência no vencimento medida de forma aproximada (gap médio 0,37%); risco de corretora/contraparte não modelado.
+Yields de carry caíram para ~2-5% a.a. em 2025-26.
