@@ -1,0 +1,12 @@
+data/
+__pycache__/
+*.pyc
+user_data/data/
+user_data/backtest_results/
+freqtrade/user_data/data/
+freqtrade/logs/
+jesse_bt/storage/
+jesse_bt/results/
+results/ml_preds_*.parquet
+*_weights.parquet
+freqtrade/user_data/backtest_results/

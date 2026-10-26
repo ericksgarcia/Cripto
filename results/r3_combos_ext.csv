@@ -1,0 +1,10 @@
+combo,members,SEL_cagr,SEL_sharpe,SEL_dd,OOS_cagr,OOS_sharpe,OOS_dd,FULL_cagr,FULL_dd
+ext_greedy2,FT_MultiMa+FT_AwesomeMacd,95.75,2.12,-24.62,-3.12,-0.02,-53.17,,
+ext_greedy3,FT_MultiMa+FT_AwesomeMacd+JS_Donchian,122.59,2.39,-26.4,-1.32,0.05,-51.63,,
+ext_greedy4,FT_MultiMa+FT_AwesomeMacd+JS_Donchian+FT_UniversalMACD,103.85,2.43,-32.83,3.19,0.26,-41.23,,
+ext_greedy5,FT_MultiMa+FT_AwesomeMacd+JS_Donchian+FT_UniversalMACD+OB_smart_dca,79.54,2.44,-27.04,3.25,0.29,-34.07,,
+manual,FT_MultiMa+JS_Donchian,133.97,2.11,-26.54,7.19,0.4,-35.88,60.2,-35.88
+manual,FT_MultiMa+OB_grid,52.16,2.02,-16.19,10.14,0.8,-19.0,30.12,-19.0
+manual,FT_MultiMa+JS_Donchian+OB_grid,89.24,2.19,-21.3,7.87,0.52,-28.06,44.11,-28.06
+manual,CLAUDE_Rotation5+FT_MultiMa+OB_grid,103.89,2.9,-16.85,21.07,1.24,-17.91,58.3,-17.91
+manual,CLAUDE_Rotation3+FT_MultiMa,174.64,2.59,-33.42,41.46,1.42,-18.89,98.83,-33.42
