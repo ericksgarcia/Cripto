@@ -19,6 +19,8 @@ def load_all():
         s = pd.read_parquet(p)["PORTFOLIO"].dropna()
         s.index = s.index.normalize()
         s = s[~s.index.duplicated(keep="last")]
+        if s.index[0] > pd.Timestamp("2021-02-01", tz="UTC"):
+            continue  # curvas de período reduzido (1m, NFI) ficam fora da comparação
         eq[p.stem] = s / s.iloc[0]
     return pd.DataFrame(eq).ffill()
 

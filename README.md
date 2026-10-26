@@ -11,7 +11,7 @@ Este repositório compara, nas mesmas condições, as estratégias dos principai
 | # | Projeto | Por que entrou | Como foi testado |
 |---|---|---|---|
 | 1 | **[freqtrade/freqtrade](https://github.com/freqtrade/freqtrade)** (~50k ⭐) | É o bot open-source mais usado | Instalado (v2026.9). As estratégias oficiais de [freqtrade-strategies](https://github.com/freqtrade/freqtrade-strategies) rodaram no **backtester do próprio freqtrade** |
-| 2 | **[iterativv/NostalgiaForInfinity](https://github.com/iterativv/NostalgiaForInfinity)** | É a estratégia comunitária mais famosa do freqtrade | Rodou no freqtrade (X7). Como é muito pesada, o período foi reduzido |
+| 2 | **[iterativv/NostalgiaForInfinity](https://github.com/iterativv/NostalgiaForInfinity)** | É a estratégia comunitária mais famosa do freqtrade | Rodou no freqtrade (X7). Como é muito pesada (80 mil linhas, ~9 GB de RAM por ano de dados 5m), foi rodada em janelas anuais de 2022 a 2026, encadeadas |
 | 3 | **[jesse-ai/jesse](https://github.com/jesse-ai/jesse)** | É o framework de pesquisa e backtest mais citado | Instalado. As estratégias de [example-strategies](https://github.com/jesse-ai/example-strategies) rodaram no **motor do próprio Jesse** (`jesse.research.backtest`) sobre candles de 1m |
 | 4 | **[hummingbot/hummingbot](https://github.com/hummingbot/hummingbot)** (~20k ⭐) | É referência em market making e scalping | Os controllers direcionais V2 (`bollinger_v1`, `macd_bb_v1`, `supertrend_v1`) foram portados com os parâmetros padrão: candles de 3m, triple barrier SL 3% / TP 2% / 45 min, cooldown e 2 executores por lado |
 | 5 | **[Drakkar-Software/OctoBot](https://github.com/Drakkar-Software/OctoBot)** (~5k ⭐) | Oferece grid, DCA e "daily trading" prontos | Os perfis padrão (Grid, Trailing Grid, Simple DCA, Smart DCA e Daily Trading com os avaliadores RSI e Double MA) foram portados para o motor comum |
@@ -35,6 +35,7 @@ O ranking completo está em [`results/ranking_geral.md`](results/ranking_geral.m
 | Jesse | Donchian (4h) | +1.755% | 65% | -52% | 1,10 | -1% | -52% |
 | Freqtrade | **MultiMa** (4h) | +877% | 48% | **-26%** | **1,39** | 12% | -23% |
 | OctoBot | Grid | +81% | 11% | -19% | 0,80 | 7% | -19% |
+| NostalgiaForInfinity | X7 (5m) — *só 2022-01 → 2026-10* | +100% | 15,5% | **-5%** | **1,85** | 17% | -5% |
 | Hummingbot | (todos perdem: scalping de 3m não sobrevive à taxa de 0,1%) | -91% a -100% | | | | | |
 | **Própria** | **Rotação de momentum (top 5)** | **+8.952%** | **117%** | -39% | **1,82** | **40%** | -32% |
 | **Própria** | Rotação de momentum (top 3, agressiva) | +19.042% | 147% | -56% | 1,79 | 69% | -33% |
@@ -43,9 +44,10 @@ O ranking completo está em [`results/ranking_geral.md`](results/ranking_geral.m
 O que os números mostram:
 
 1. **Entre os projetos prontos, o MultiMa do freqtrade é o mais sólido.** É uma tendência com médias TEMA e take-profit escalonado. Teve o menor drawdown entre as estratégias que ganham bem e é o único que bate o buy & hold em risco ajustado nas duas janelas. O Donchian do Jesse ganhou mais em 2021, mas ficou no zero de 2024 a 2026.
-2. **Cerca de 70% das estratégias de exemplo perdem dinheiro** depois das taxas. As piores são os scalpers de 1m a 15m e as de reversão à média.
+2. **39 das 61 estratégias externas testadas no período completo (64%) perdem dinheiro** depois das taxas, e só 2 batem o buy & hold em CAGR. As piores são os scalpers de 5m a 15m e as de reversão à média. Os 4 scalpers de 1m que couberam na memória (testados só em 2025-2026) também perderam, de -2% a -99,8%.
 3. **Os controllers do Hummingbot e o DailyTrading do OctoBot, com parâmetros padrão, destroem capital.** Fazem dezenas de milhares de operações com alvo de 2% e pagam 0,24% de custo por ida e volta. O Hummingbot só faz sentido como market maker, com taxa maker ou rebate.
-4. **Grid (OctoBot)** dá retorno baixo e estável: 11% ao ano com DD de -19%. Ele fica 100% em USDT quando o preço sai do range para cima e "segura o saco" quando o preço cai abaixo do range.
+4. **A NostalgiaForInfinity X7 é a melhor estratégia externa em risco.** É um comprador de quedas extremas com recompras (DCA) e fica em caixa ~75% do tempo. De 2022 a 2026 lucrou em **todos os anos**: +18% em 2022, quando o buy & hold caiu 83%, e +27% em 2025. O drawdown máximo foi de só -5%. O retorno absoluto é modesto: 15,5% ao ano, contra 35% da rotação na mesma janela. Ressalva: as janelas anuais forçam o fechamento das posições na virada do ano.
+5. **Grid (OctoBot)** dá retorno baixo e estável: 11% ao ano com DD de -19%. Ele fica 100% em USDT quando o preço sai do range para cima e "segura o saco" quando o preço cai abaixo do range.
 
 ## 4. As estratégias se complementam?
 
@@ -54,6 +56,19 @@ Sim, mas só as que capturam fenômenos diferentes. Os detalhes estão em `resea
 - A correlação diária entre a **Rotação** (própria) e o **MultiMa** é de apenas **0,12**. Já os seguidores de tendência "clássicos" entre si (Donchian, MACD_EMA, SMACrossover, SimpleBollinger) ficam entre 0,5 e 0,7: na prática são a mesma aposta.
 - Grid e DCA têm correlação de 0,7 a 0,97 com o buy & hold, então não diversificam nada em queda.
 - **A melhor complementação foi Rotação5 + MultiMa, 50/50 com rebalanceamento semanal.** No período inteiro, o Sharpe sobe para **2,14**, o maior de todos, e o Calmar para 3,7. O drawdown fora da amostra cai de -32% para **-19%**, mantendo ~27% ao ano. Somando o Grid do OctoBot (1/3 cada), o DD OOS fica em -18%.
+- **A NostalgiaForInfinity é o melhor complemento.** A correlação diária dela com todas as outras fica entre -0,04 e 0,05, porque ela compra quedas enquanto as demais seguem tendência. Resultado de 2022-01 a 2026-10 (`research/r7_nfi.py`, `results/r7_nfi.csv`):
+
+  | Carteira (pesos iguais, rebal. semanal) | CAGR | Max DD | Sharpe | 2022 | 2025 |
+  |---|---|---|---|---|---|
+  | Rotação5 sozinha | 34,9% | -37,8% | 1,00 | -13,7% | -1,3% |
+  | NFI X7 sozinha | 15,5% | -5,1% | 1,85 | +17,7% | +27,2% |
+  | **Rotação5 + NFI** | **27,5%** | **-17,4%** | 1,39 | +1,3% | +14,4% |
+  | Rotação5 + MultiMa + NFI | 22,0% | -12,5% | 1,44 | -0,9% | +7,1% |
+  | Rotação5 + MultiMa | 23,8% | -23,0% | 1,10 | -9,5% | -3,0% |
+  | Buy & Hold | -11,9% | -83,0% | 0,20 | -82,8% | -36,9% |
+
+  A rotação ganha nas altas (2023-2024) e a NFI segura as quedas e os mercados laterais (2022, 2025). Juntas, elas cortam o drawdown pela metade e mantêm a maior parte do retorno.
+- Adicionar mais membros pelo histórico piora o resultado. Com o AwesomeMacd como 3º membro, o Sharpe da seleção sobe de 2,8 para 2,9, mas o CAGR OOS cai de 27% para 11%.
 - **Cuidado com combinar só pelo histórico.** Escolhendo de forma gulosa apenas entre as estratégias externas, pelo Sharpe de 2021-2023, saiu MultiMa + AwesomeMacd + Donchian (Sharpe 2,4 no período de seleção). Fora da amostra, esse combo deu **-1% ao ano com DD de -52%**. Combinar estratégias que só pareceram boas no passado é overfitting disfarçado.
 
 ## 5. Uma estratégia melhor que todas
@@ -73,6 +88,11 @@ Por que ela funciona: momentum cross-sectional e tendência são os efeitos mais
 - **Viés de sobrevivência:** num universo de 70 moedas com LUNA, FTT etc., escolhendo as top 20/30 por volume na época, o resultado se mantém. O CAGR de 2021-2026 fica em 152-155% e o Sharpe em 1,7. O drawdown, porém, fica pior: entre -50% e -55%.
 - **Custos:** com o triplo de taxa (0,3% por lado), ainda dá 98% ao ano. Com **1 dia de atraso** na execução, dá 108% ao ano.
 - **Stops intradiários (ATR em 4h)** foram testados e **pioraram** o resultado. Execução em 4h em vez de diária também piorou.
+
+### Onde ela é fraca
+
+- É a de **maior retorno** em qualquer janela longa, mas **não é a melhor em todo regime**. Em 2025-2026, com o mercado em queda (buy & hold -52%), ela ficou praticamente parada: +3,5%, com DD de -24%. No mesmo período, a NostalgiaForInfinity fez +28% (`results/janela_2025_2026.csv`).
+- Por isso, a recomendação final é a **combinação Rotação5 + NostalgiaForInfinity**. A rotação pega as altas e a NFI ganha nas quedas, sem correlação entre as duas.
 
 ### "Estratégia avançada com candles": modelo de ML
 
@@ -110,6 +130,7 @@ freqtrade/run_all.sh                                   # freqtrade (1 processo p
 ~/ftenv/bin/python -m research.r2_ml_candles 30        # modelo de ML com candles
 ~/ftenv/bin/python -m research.r3_combine              # complementaridade e combos
 ~/ftenv/bin/python -m research.r4_final                # estratégia final + robustez
+~/ftenv/bin/python -m research.r7_nfi                  # NostalgiaForInfinity (janelas anuais) + combinações
 ~/ftenv/bin/python -m research.r6_table && ~/ftenv/bin/python -m research.r5_charts
 
 ~/ftenv/bin/python -m scripts.sinal_rotacao 5          # carteira-alvo de hoje
@@ -123,7 +144,7 @@ engine/ports.py       ports Hummingbot (3 controllers) e OctoBot (5 perfis)
 engine/mine.py        blocos de sinal e estratégias próprias (rotação, TSMOM, turtle, overlay de stop)
 freqtrade/            config, wrapper offline de mercados, estratégias oficiais + NFI
 jesse_bt/             runner do Jesse + estratégias de exemplo (patch mínimo de compatibilidade no KDJ)
-research/             r1 varredura · r2 ML com candles · r3 combinações · r4 final/robustez · r5 gráficos · r6 tabela
+research/             r1 varredura · r2 ML com candles · r3 combinações · r4 final/robustez · r5 gráficos · r6 tabela · r7 NFI
 results/              CSVs, curvas diárias (parquet) e gráfico
 ```
 
@@ -131,5 +152,6 @@ results/              CSVs, curvas diárias (parquet) e gráfico
 
 - Os 10 pares são as moedas grandes de hoje, o que favorece qualquer estratégia comprada (inclusive o buy & hold). O teste no universo de 70 moedas mitiga isso.
 - Hummingbot e OctoBot foram **portados**, não rodados nos motores originais (os backtesters deles exigem infraestrutura de exchange e banco). A lógica e os parâmetros padrão foram copiados dos repositórios. Os avaliadores do OctoBot foram simplificados: a parte "chances to be max" do DoubleMA ficou de fora.
+- A NostalgiaForInfinity só foi testada de 2022 em diante, em janelas anuais: 10 pares × 6 anos de 5m não cabem em 15 GB de RAM.
 - No Jesse, o `TurtleRules` estoura a margem mesmo com 3x, pelo sizing piramidal, e o `IFR2` não gera sinais nesses pares. No freqtrade, `FixedRiskRewardLoss` é incompatível com o pandas atual e as estratégias short (`AlmgrenChriss`, `TWAP`) não rodam em spot. As estratégias de 1m rodaram só de 2025 a 2026, por limite de memória.
 - A rotação concentra em poucas moedas: espere quedas de 30 a 55% e longos períodos parados em USDT (ela não opera em boa parte de 2022).

@@ -1,6 +1,7 @@
 #!/bin/bash
-# NostalgiaForInfinityX7 (estratégia mais popular da comunidade freqtrade) — 2024-01 a 2026-10 por custo computacional
+# NostalgiaForInfinityX7 em janelas anuais (10 pares x 5m x vários anos não cabe em 15 GB de RAM)
 cd "$(dirname "$0")"
-while pgrep -f retry2.sh >/dev/null; do sleep 30; done
-/home/user/ftenv/bin/python ft.py backtesting -c config.json --strategy NostalgiaForInfinityX7 --timerange 20240101-20261025 --cache none --export trades > logs/NostalgiaForInfinityX7.log 2>&1
-echo "done NFI $(grep -c 'STRATEGY SUMMARY' logs/NostalgiaForInfinityX7.log)"
+for tr in 20220101-20230101 20230101-20240101 20240101-20250101 20250101-20261025; do
+  /home/user/ftenv/bin/python ft.py backtesting -c config.json --strategy NostalgiaForInfinityX7 --timerange $tr --cache none --export trades > logs/NFI_$tr.log 2>&1
+  echo "done $tr $(grep -c 'STRATEGY SUMMARY' logs/NFI_$tr.log)"
+done
