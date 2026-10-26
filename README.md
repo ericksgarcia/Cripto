@@ -311,3 +311,33 @@ Compra as alts com `smart_div` > 2,5 e segura 3-7 dias, com regime BTC. Versão 
 O sinal sobreviveu ao período 2024-26, em que as alternativas ingênuas quebraram, e não é momentum disfarçado.
 
 **Somado aos 3 sistemas da seção 11** (rompimento BTC/ETH, rotação v2, NFI), com 1/4 cada e sem alavancagem: 24%/ano no OOS, DD -14%, Sharpe 1,70. Com os 3 sistemas eram 25%, DD -14% e Sharpe 1,54. Ou seja, o risco/retorno melhora um pouco e o retorno fica igual.
+
+## 13. Fase 6: estratégias "milagrosas" de fóruns, testadas (`research/r27_forum.py`)
+
+Foram 18 estratégias populares (r/algotrading, TradingView, YouTube, Santiment, Look Into Bitcoin), implementadas com as regras publicadas e testadas em BTC e ETH de 2018-01 a 2026-10. Spot, sem alavancagem, custo 0,12% por lado. Comprar e segurar: BTC 22%/ano (DD -81%), ETH 14%/ano (DD -94%).
+
+| Estratégia (promessa) | BTC CAGR / DD | ETH CAGR / DD | 2024-26 (BTC/ETH) |
+|---|---|---|---|
+| Ciclo do halving (compra 1 ano antes, vende 1,5 ano depois) | **49% / -63%** (só 2 ciclos) | — | 43% |
+| Gaussian Channel + SMA200 (TradingView) | **43% / -42%** | 30% / -65% | 26% / 17% |
+| Supertrend + EMA200 (4h) | 36% / -33% | **53% / -42%** | 12% / 36% |
+| RSI(5) > 70 momentum (r/algotrading) | 33% / -28% | 22% / -38% | 10% / 25% |
+| Z-score EMA65 (r/algotrading: **"65,9%/ano, DD 27%"**) | 30% / **-61%** | 34% / -71% | 17% / 14% |
+| Cruz dourada 50/200 | 23% / -67% | 21% / -79% | 13% / -7% |
+| UT Bot 1d / 4h | 19% / -0,4% | 27% / 8% | 18% / -11% |
+| Squeeze Momentum LazyBear 1d / 4h | 18% / 3% | 14% / 7% | -1% / 2% |
+| Bull Market Support Band | 16% / -70% | 16% / -72% | 9% / -5% |
+| 200 semanas + Pi Cycle | 13% | — | 26% |
+| RSI(2) Larry Connors | 5% | 6% | 7% / 2% |
+| Medo/ganância (substituto por preço; índice F&G bloqueado na rede) | 4% | -9% | -6% / -8% |
+| Só segunda e sábado (Santiment) | -5% | -3% | -1% / 7% |
+| MACD + EMA200 (Trading Rush: **"61-62% de acerto"**) 15m/1h/4h | -23% / -2% / -4%, **acerto 42%** | -27% / -6% / -10% | |
+| 3 EMAs + Stoch RSI + ATR 1h / 4h | -41% / 5% | -45% / -9% | |
+| EMA50/200 + Stoch RSI no fundo 1h / 4h | -41% / -11% | -46% / 1% | |
+| Scalping 5 min EMA9/21 + RSI | **-99,8%** | -99,7% | |
+
+**O que aprendemos**
+- **Nenhuma promessa se confirmou.** O "65,9%/ano com DD 27%" vira 30%/ano com DD -61% a partir de 2018 (a promessa inclui 2014-2017). O "61-62% de acerto" do MACD+EMA200 vira 42% de acerto e prejuízo.
+- **Tudo que é intradiário (5m, 15m, 1h) destrói a conta com os custos**, de -23% a -99,8% ao ano.
+- **O que funciona é tendência no diário ou no 4h em BTC/ETH** (Gaussian, Supertrend+EMA200, RSI5>70, halving). É a mesma conclusão do nosso sistema de rompimento.
+- **As 3 melhores combinadas** (Gaussian + Supertrend/EMA200 + RSI5>70, em BTC e ETH): 42%/ano em 2018-26 com DD -21%, e 24%/ano no OOS 2024-26. Atenção: elas foram escolhidas como "as melhores de 18" olhando o período inteiro, então há viés de seleção. Somadas aos nossos 3 sistemas, o Sharpe vai de 1,54 para 1,64, com retorno igual (~25%/ano).
