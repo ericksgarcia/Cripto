@@ -243,3 +243,36 @@ Isso confirma overfitting forte. O que funciona tanto no DEV quanto no OOS:
 | idem, 3x fixo | 53% | 3,6% | -45% | 1,1 |
 
 **Conclusão:** 10% ao mês (~214%/ano) **não foi alcançável de forma robusta** em nenhuma das ~10.000 configurações testadas sem viés de sobrevivência. Os resultados de 100-300%/ano aparecem só no período em que foram escolhidos (com 2021 dentro) e não se repetem depois. O teto realista encontrado é 2-3,5% ao mês, com quedas de 25-45%.
+
+## 11. Fase 4: análise técnica "profissional", sem alavancagem
+
+**18 padrões programados com regras objetivas** (`research/ta/patterns.py`). Topos e fundos só contam depois de confirmados, como um trader os veria em tempo real:
+- Smart Money Concepts: BOS, CHoCH, order block, FVG e varredura de liquidez;
+- Wyckoff: spring;
+- padrões clássicos: fundo duplo, triângulo ascendente, bandeira, VCP de Minervini;
+- squeeze TTM, Donchian com volume, Ichimoku completo;
+- divergência de RSI, engolfo em suporte, pullback na EMA20, Supertrend, Heikin-Ashi;
+- confluência varredura + CHoCH.
+
+**Universo:** 329 moedas que estiveram no top-30 por volume em algum momento (sem viés de sobrevivência), em 4h e 1d. Custo de 0,12% por lado.
+
+### Estudo de evento (`r19_ta_events.py`, `r19b_report.py`)
+Cerca de 150 mil sinais. Cada sinal vira uma operação com gestão padronizada e é comparado com entradas aleatórias da mesma semana.
+- **Em altcoins, rompimentos perdem para entrada aleatória** (de -0,6% a -1,9% por operação, consistente nos dois períodos): Donchian, BOS, triângulo, Ichimoku, FVG, order block.
+- **Em altcoins, padrões de reversão após "caça de stops" têm vantagem real, mas pequena.** Spring/varredura no 4h dá +0,4% (DEV) e +0,9% (OOS) contra o aleatório, com 7/7 e 3/3 anos positivos. No diário dá +2,1% e +3,3%. Divergência de RSI dá +0,9% nos dois períodos.
+- **Em BTC/ETH é o contrário: rompimentos funcionam.** VCP dá +3,4%/+1,7% por operação contra o aleatório, squeeze +0,8%/+2,4% e Donchian +1,3%/+0,8%.
+
+### Carteiras reais (`r21_ta_portfolio.py`, `r22_majors_breakout.py`, `r23_ta_final.py`)
+- Carteiras de reversão em altcoins (5-10 posições): a vantagem não cobre custo e mercado em queda; **OOS negativo**.
+- **Rompimento 4h em BTC+ETH** (VCP + Donchian55 c/ volume + squeeze TTM, stop técnico 1-4 ATR + stop móvel 4 ATR): DEV +58%/ano (DD -18%) e **OOS +25%/ano, DD -27%**. Comprar e segurar BTC/ETH no mesmo OOS deu +15% com DD -60%. A mediana de todas as variações no OOS fica em 10-14%. Estendido às top-3/top-5, o resultado piora (9%/4%), o que confirma o efeito "só grandes".
+
+### Carteira técnica final, sem alavancagem (2024-26, fora da amostra)
+| Carteira | CAGR | Média/mês | Max DD | Pior mês | Sharpe |
+|---|---|---|---|---|---|
+| Rompimento BTC/ETH (4h) | 25% | 1,9% | -27% | -7% | 0,9 |
+| Rotação v2 (força relativa + médias) | 29% | 2,1% | -33% | -14% | 0,9 |
+| NFI (compra de quedas multi-indicador) | 14% | 1,1% | -3% | -2% | 2,2 |
+| **Rompimento + Rotação (50/50)** | **30%** | **2,2%** | -23% | -8% | 1,2 |
+| **Os 3 (1/3 cada)** | **25%** | **1,9%** | **-14%** | **-5%** | **1,5** |
+
+Correlação diária entre os três sistemas: de -0,08 a 0,04 (praticamente independentes).
