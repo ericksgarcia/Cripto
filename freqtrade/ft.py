@@ -3,7 +3,11 @@ import sys
 import ccxt, ccxt.async_support as ccxta
 from freqtrade.main import main
 
+import json, os
 BASES = ["BTC", "ETH", "BNB", "SOL", "XRP", "ADA", "DOGE", "LTC", "LINK", "AVAX"]
+_pl = os.path.join(os.path.dirname(os.path.abspath(__file__)), "nfi_pairlists.json")
+if os.path.exists(_pl):
+    BASES = sorted(set(BASES) | {p.split("/")[0] for v in json.load(open(_pl)).values() for p in v})
 
 def markets():
     m = {}

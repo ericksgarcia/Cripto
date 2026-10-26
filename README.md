@@ -183,3 +183,63 @@ Distribuição mensal 2022-01 → 2026-10 (58 meses):
 | Rotação LS perp + NFI, 3x | 118% | 6,7% | 3,7% | 12 | 22 | -19% | -52% |
 
 Ressalva: a variante "top 3 + short parcial, 10 moedas" foi escolhida entre 24 variantes olhando também 2024-2026. A melhor pelo período de desenvolvimento ("both", 30 moedas, top 5) deu 41%/ano fora da amostra, então o ganho não depende dessa escolha, mas o número exato tem algum otimismo.
+
+## 10. Fase 3: busca em larga escala e correção de viés (meta pedida: 10% ao mês)
+
+### O que mudou: universo sem viés de sobrevivência
+Nas fases 1-2, a rotação foi testada nas 10 moedas grandes de **hoje**, ou numa lista de 70 escolhida por mim. As duas carregam viés: sabemos hoje quais sobreviveram. Na fase 3, baixei **todos** os pares que já existiram na Binance:
+- 900 perpétuos USDT-M com funding real, dos quais 670 cripto, depois de excluir as ações, ETFs e commodities lançadas em 2026;
+- 754 pares spot USDT, dos quais 650 moedas, depois de excluir stables, fiat, wrapped e tokens alavancados.
+
+A cada dia, a elegibilidade é point-in-time: entram as top-N por volume daquele momento.
+
+**Correção importante:** com isso, os números das fases 1-2 se mostram otimistas. Na fase 2, a "rotação top 3 + short" dava 67%/ano. No universo completo, sem escolher as moedas a dedo, fica em 30-35%/ano em 2022-26, com quedas bem maiores.
+
+### Busca de variações da rotação (`research/r11_variants.py`, `r14_analyze.py`)
+Foram 9.000 variações sorteadas num espaço de 15 dimensões:
+- horizonte e tipo do sinal (risco-ajustado, bruto, residual ao BTC, tendência suave, ensembles);
+- quantas moedas comprar e tamanho do universo;
+- 9 filtros de regime e filtro de média por moeda;
+- frequência de rebalanceamento e histerese;
+- short das piores e pesos pelo inverso da volatilidade;
+- alvo de volatilidade, idade mínima, teto de volatilidade e stop intradiário.
+
+Escolha só com DEV (2020-07 → 2023-12); OOS = 2024-01 → 2026-10.
+
+| | Perpétuos (670 moedas) | Spot (650 moedas) |
+|---|---|---|
+| Correlação Sharpe DEV × OOS | 0,32 | 0,36 |
+| Top 10% do DEV: CAGR mediano DEV → OOS | 80% → **-2%** | 139% → **19%** |
+| Seletor walk-forward (melhor do último ano) | destrutivo (-8% a -84%/ano) | — |
+
+Isso confirma overfitting forte. O que funciona tanto no DEV quanto no OOS:
+- só as **5-10 moedas mais líquidas**;
+- **regime BTC > SMA100**;
+- **excluir moedas com vol > 100-150%/ano** (evita memecoins pumpadas, como o RAVE com -87% num dia);
+- pesos pelo inverso da vol;
+- **sem stop intradiário** (o stop piora em todas as versões).
+
+**Rotação v2**: ensemble das 20 melhores (pelo DEV) dessa subfamília no universo spot completo. Dá **29%/ano em 2024-26**, Sharpe 0,93, DD -33%. Com 1, 5, 10 ou 40 membros o resultado é o mesmo (28-31%), então é robusto.
+
+### Outras ideias testadas
+| Ideia | Resultado | Veredito |
+|---|---|---|
+| Regime por ML (LightGBM prevendo BTC 14d) | AUC 0,46 (pior que acaso) | ❌ |
+| Sazonalidade por hora/dia (BTC/ETH 1h) | não se repete fora da amostra | ❌ |
+| Short de novas listagens (574 listagens) | squeezes de +100-500%; DD -58% a -98% | ❌ |
+| Funding como fator (long funding baixo / short alto) | Sharpe ~2 em 2020-23, **quebra** em 2024-26 | ❌ |
+| Reversão de curto prazo (1-3 dias) | perde sempre | ❌ |
+| Seguir pumps extremos em 1m | positivo bruto, mas some com slippage realista | ❌ |
+| **Comprar crash extremo em 1m** (queda z>8 em 60 min, segurar 4h) | +16%/ano, DD -9%, robusto a 4x o custo; enfraqueceu de +21% (2018-23) para +8% (2024-26) | ➖ pequeno |
+| **NFI X7 escalada** (config recomendado, 25 pares point-in-time por janela de 4 meses) | 12-14%/ano, **DD -5%**, positiva em todas as 15 janelas | ✅ |
+
+### Carteira final honesta (`research/r18_final.py`)
+| Carteira (2024-26 fora da amostra) | CAGR | Média/mês | Max DD | Sharpe |
+|---|---|---|---|---|
+| Rotação v2 | 29% | 2,1% | -33% | 0,9 |
+| NFI25 | 14% | 1,1% | -3% | 2,2 |
+| **Rotação v2 + NFI25 (50/50)** | **23%** | **1,7%** | **-15%** | 1,3 |
+| idem, alavancagem dinâmica (alvo de vol 30%, máx. 3x) | 35% | 2,5% | -25% | 1,2 |
+| idem, 3x fixo | 53% | 3,6% | -45% | 1,1 |
+
+**Conclusão:** 10% ao mês (~214%/ano) **não foi alcançável de forma robusta** em nenhuma das ~10.000 configurações testadas sem viés de sobrevivência. Os resultados de 100-300%/ano aparecem só no período em que foram escolhidos (com 2021 dentro) e não se repetem depois. O teto realista encontrado é 2-3,5% ao mês, com quedas de 25-45%.

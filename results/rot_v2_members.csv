@@ -1,0 +1,21 @@
+name
+look=10|kind=raw|top=3|N=5|regime=btc100|coin_ma=50|rebal=7|buffer=0|short_w=0.0|wmode=1|vt=0.6|min_age=30|maxvol=1.0|dstop=0.0|lev=1.0
+look=21|kind=riskadj|top=4|N=5|regime=btc100|coin_ma=50|rebal=7|buffer=1|short_w=0.0|wmode=1|vt=0.6|min_age=365|maxvol=1.0|dstop=0.0|lev=1.0
+look=7|kind=riskadj|top=5|N=10|regime=btc100|coin_ma=50|rebal=7|buffer=1|short_w=0.0|wmode=1|vt=0.6|min_age=365|maxvol=1.0|dstop=0.0|lev=1.0
+"look=(7, 14, 30)|kind=riskadj|top=2|N=8|regime=btc100|coin_ma=20|rebal=7|buffer=3|short_w=0.0|wmode=1|vt=0.0|min_age=365|maxvol=1.0|dstop=0.0|lev=1.0"
+"look=(7, 14, 30)|kind=riskadj|top=5|N=8|regime=btc100|coin_ma=100|rebal=7|buffer=0|short_w=0.0|wmode=1|vt=0.6|min_age=180|maxvol=1.0|dstop=0.0|lev=1.0"
+look=10|kind=riskadj|top=5|N=10|regime=btc100|coin_ma=100|rebal=7|buffer=1|short_w=0.0|wmode=1|vt=0.6|min_age=180|maxvol=1.0|dstop=0.0|lev=1.0
+"look=(7, 21)|kind=riskadj|top=2|N=10|regime=btc100|coin_ma=0|rebal=7|buffer=3|short_w=0.0|wmode=0|vt=0.0|min_age=365|maxvol=1.0|dstop=0.0|lev=1.0"
+look=30|kind=sharpe_smooth|top=5|N=10|regime=btc100|coin_ma=100|rebal=3|buffer=3|short_w=0.0|wmode=1|vt=0.0|min_age=30|maxvol=1.0|dstop=0.0|lev=1.0
+look=14|kind=sharpe_smooth|top=4|N=8|regime=btc100|coin_ma=20|rebal=7|buffer=3|short_w=0.0|wmode=1|vt=0.6|min_age=180|maxvol=1.0|dstop=0.0|lev=1.0
+"look=(14, 30, 60)|kind=resid|top=4|N=8|regime=btc100|coin_ma=50|rebal=2|buffer=0|short_w=0.0|wmode=0|vt=0.0|min_age=30|maxvol=1.5|dstop=0.0|lev=1.0"
+look=30|kind=sharpe_smooth|top=3|N=5|regime=btc100|coin_ma=0|rebal=7|buffer=0|short_w=0.0|wmode=1|vt=0.0|min_age=30|maxvol=1.5|dstop=0.0|lev=1.0
+look=7|kind=raw|top=3|N=5|regime=btc100|coin_ma=20|rebal=1|buffer=1|short_w=0.0|wmode=0|vt=0.0|min_age=30|maxvol=1.0|dstop=0.0|lev=1.0
+look=60|kind=riskadj|top=2|N=5|regime=btc100|coin_ma=100|rebal=7|buffer=0|short_w=0.0|wmode=1|vt=0.6|min_age=30|maxvol=1.0|dstop=0.0|lev=1.0
+look=21|kind=riskadj|top=3|N=8|regime=btc100|coin_ma=20|rebal=7|buffer=3|short_w=0.0|wmode=0|vt=0.6|min_age=30|maxvol=1.0|dstop=0.0|lev=1.0
+look=21|kind=sharpe_smooth|top=3|N=5|regime=btc100|coin_ma=50|rebal=3|buffer=3|short_w=0.0|wmode=1|vt=0.6|min_age=180|maxvol=1.0|dstop=0.0|lev=1.0
+look=10|kind=raw|top=3|N=5|regime=btc100|coin_ma=100|rebal=3|buffer=3|short_w=0.0|wmode=1|vt=0.0|min_age=180|maxvol=1.0|dstop=0.0|lev=1.0
+look=10|kind=raw|top=4|N=8|regime=btc100|coin_ma=0|rebal=7|buffer=0|short_w=0.0|wmode=1|vt=0.6|min_age=365|maxvol=1.5|dstop=0.0|lev=1.0
+look=30|kind=raw|top=7|N=8|regime=btc100|coin_ma=0|rebal=1|buffer=1|short_w=0.0|wmode=0|vt=0.6|min_age=365|maxvol=1.5|dstop=0.0|lev=1.0
+look=30|kind=raw|top=7|N=10|regime=btc100|coin_ma=50|rebal=1|buffer=3|short_w=0.0|wmode=0|vt=0.6|min_age=180|maxvol=1.0|dstop=0.0|lev=1.0
+"look=(14, 30, 60)|kind=sharpe_smooth|top=2|N=10|regime=btc100|coin_ma=20|rebal=3|buffer=1|short_w=0.0|wmode=0|vt=0.0|min_age=180|maxvol=1.0|dstop=0.0|lev=1.0"

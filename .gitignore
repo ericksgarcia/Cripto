@@ -10,3 +10,7 @@ jesse_bt/results/
 results/ml_preds_*.parquet
 *_weights.parquet
 freqtrade/user_data/backtest_results/
+results/r11_returns*.parquet
+freqtrade/user_data/data_nfi/
+freqtrade/user_data/backtest_results_nfi/
+data/*.log
