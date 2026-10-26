@@ -5,6 +5,7 @@ Convenções:
 - Taxa padrão 0,1% por lado + 0,02% de slippage (Binance spot sem desconto BNB).
 - Cada par recebe a mesma fração do capital; a curva da carteira é a soma das curvas dos pares.
 """
+import os
 from pathlib import Path
 import numpy as np
 import pandas as pd
@@ -12,7 +13,8 @@ from numba import njit
 
 ROOT = Path(__file__).resolve().parents[1]
 SYMS = ["BTC", "ETH", "BNB", "SOL", "XRP", "ADA", "DOGE", "LTC", "LINK", "AVAX"]
-START, END = "2021-01-01", "2026-10-25"
+START = "2021-01-01"
+END = os.environ.get("CRIPTO_END", "2026-10-25")  # fim fixo dos backtests; o script de sinal usa "2100-01-01"
 FEE = 0.001
 SLIP = 0.0002
 AGG = {"open": "first", "high": "max", "low": "min", "close": "last", "volume": "sum"}
