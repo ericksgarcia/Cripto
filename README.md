@@ -155,3 +155,31 @@ results/              CSVs, curvas diárias (parquet) e gráfico
 - A NostalgiaForInfinity só foi testada de 2022 em diante, em janelas anuais: 10 pares × 6 anos de 5m não cabem em 15 GB de RAM.
 - No Jesse, o `TurtleRules` estoura a margem mesmo com 3x, pelo sizing piramidal, e o `IFR2` não gera sinais nesses pares. No freqtrade, `FixedRiskRewardLoss` é incompatível com o pandas atual e as estratégias short (`AlmgrenChriss`, `TWAP`) não rodam em spot. As estratégias de 1m rodaram só de 2025 a 2026, por limite de memória.
 - A rotação concentra em poucas moedas: espere quedas de 30 a 55% e longos períodos parados em USDT (ela não opera em boa parte de 2022).
+
+## 9. Fase 2: tentativas de melhorar (meta pedida: 20% ao mês)
+
+Foram testadas (scripts `research/r8_new.py`, `r9_futures.py`, `r10_final2.py`; dados de 68 perpétuos USDT-M + funding real):
+
+| Ideia | Resultado (2021-2026) | Veredito |
+|---|---|---|
+| Volatility Breakout (Larry Williams), 10 e 20 moedas | ~1%/mês, piora fora da amostra | ❌ |
+| Compra de capitulação intradiária (1h) simples | perde 2-9%/mês | ❌ (a NFI só funciona pelos filtros dela) |
+| Funding carry (spot comprado + perp vendido) | ~10%/ano até 2023, ≈0% em 2024-26 | ❌ morreu |
+| Rotação vendendo a descoberto no mercado de baixa | DD -48% a -69% (short squeezes) | ❌ |
+| Rotação market-neutral (long top / short piores) | 3-4%/mês, DD ~-30% | ➖ |
+| **Rotação top 3 em perp + short parcial das piores** | **67%/ano** (2022-26), DD -35% | ✅ melhora |
+| **Essa rotação + NFI (50/50)** | **43%/ano, DD -18%** | ✅ melhor equilíbrio |
+| Alavancagem 2x / 3x da combinação | 81% / 118% ao ano, DD -36% / -52% | ⚠️ risco alto |
+
+**20% ao mês não é alcançável de forma sustentável.** Na rotação, alavancar acima de ~2-3x *reduz* o retorno (o arrasto de volatilidade come o ganho) e leva à liquidação em 8x. A rotação sozinha tem meses de +80% a +100%, mas a **mediana mensal é ~0-2%**: o retorno vem de poucos meses explosivos de alta, entre longos períodos parados.
+
+Distribuição mensal 2022-01 → 2026-10 (58 meses):
+
+| Carteira | CAGR | Média/mês | Mediana/mês | Meses ≥ 20% | Meses negativos | Pior mês | Max DD |
+|---|---|---|---|---|---|---|---|
+| Rotação5 spot + NFI (fase 1) | 27% | 2,0% | 0,1% | 2 | 27 | -7% | -17% |
+| **Rotação LS perp + NFI** | **43%** | **3,0%** | 1,7% | 2 | 20 | -6% | **-18%** |
+| Rotação LS perp + NFI, 2x | 81% | 5,1% | 2,7% | 8 | 21 | -13% | -36% |
+| Rotação LS perp + NFI, 3x | 118% | 6,7% | 3,7% | 12 | 22 | -19% | -52% |
+
+Ressalva: a variante "top 3 + short parcial, 10 moedas" foi escolhida entre 24 variantes olhando também 2024-2026. A melhor pelo período de desenvolvimento ("both", 30 moedas, top 5) deu 41%/ano fora da amostra, então o ganho não depende dessa escolha, mas o número exato tem algum otimismo.
