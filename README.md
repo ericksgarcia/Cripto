@@ -276,3 +276,38 @@ Cerca de 150 mil sinais. Cada sinal vira uma operação com gestão padronizada 
 | **Os 3 (1/3 cada)** | **25%** | **1,9%** | **-14%** | **-5%** | **1,5** |
 
 Correlação diária entre os três sistemas: de -0,08 a 0,04 (praticamente independentes).
+
+## 12. Fase 5: "contra-ataque" à multidão
+
+Pergunta: as estratégias mais populares do varejo criam movimentos previsíveis que dá para explorar?
+
+### A) Gatilhos populares, só preço (`research/r24_crowd.py`)
+São 24 eventos (rompimentos de 20/55 dias, armadilhas de alta e baixa, caça de stops, RSI 70/30, cruzamentos de médias 50/200, Bollinger, MACD, pumps e pânicos). Em cada um, o retorno de 1-14 dias foi comparado com um controle **sem olhar o futuro**: as altcoins contra a média das outras alts no mesmo dia, e BTC/ETH contra a média do próprio ativo no período.
+> Na primeira versão usei como controle a média de ±45 dias ao redor do evento. Isso cria uma falsa reversão à média, porque o próprio pump infla o "normal". Foi corrigido.
+
+- **BTC/ETH: o varejo que "compra fundo e vende topo" perde.** Depois de um pump de 3 dias, o preço sobe mais 4,5%/4,1% em 7 dias (DEV/OOS, t≈2,6). Depois do RSI cruzar 70, +2,1%/+2,9%. Comprar a "caça de stops" abaixo do fundo de 20/55 dias perde 2,5-5%. O contra-ataque é **seguir a força**, que é o que o sistema de rompimento da seção 11 já faz.
+- **Altcoins:** os efeitos são pequenos. Rompimento de 55 dias que falha rende 1,1-1,4% abaixo das outras alts nos 7 dias seguintes.
+- **Gaps da CME e vencimento de opções:** não foram testados por falta de dados confiáveis de horário da CME e de opções.
+
+### B) Posicionamento da multidão (`research/r25_positioning.py`)
+Métricas oficiais da Binance para 32 perpétuos, de 2020-2021 a 2026: long/short de contas (varejo), long/short de posições dos top traders, open interest e fluxo agressor.
+- **Sinal mais consistente: top traders comprados enquanto o varejo está vendido** (`smart_div` = z(top traders) − z(varejo) > 2). Nas alts dá +1,2%/+0,8% em 3 dias e +2,3%/+1,9% em 7 dias (DEV/OOS, milhares de casos). Em BTC/ETH dá +0,7%/+0,6%.
+- **Varejo muito comprado:** -1,8%/-0,5% em 7 dias. Contrário, mas fraco no OOS.
+- **Open interest disparando:** a moeda rende menos que as outras no dia seguinte (IC -0,03, t≈-3,5 nos dois períodos).
+- **Liquidação de longs** (OI e preço caindo forte): repique de +0,6%/+0,8% em 3 dias.
+- **Funding alto não é sinal contrário:** prevê alta.
+- **Prever a direção pelo "varejo muito vendido" e pelo regime ML:** não funciona.
+
+### C) Estratégia "Grandes x varejo" (`research/r26_smartmoney.py`)
+Compra as alts com `smart_div` > 2,5 e segura 3-7 dias, com regime BTC. Versão neutra: 50% comprado nesse sinal e 50% vendido (1x, sem alavancagem) nas alts com varejo eufórico.
+
+| Estratégia (alts) | 2021-23 | 2024-26 OOS | DD OOS |
+|---|---|---|---|
+| Comprar todas as alts | +69%/ano | **-18%/ano** | -81% |
+| Momentum 7d (top 3) | +433%/ano | **-40%/ano** | -95% |
+| Grandes x varejo, só comprado | +13%/ano | **+30%/ano** | -49% |
+| **Grandes x varejo, neutro** | +7%/ano | **+20%/ano** | **-18%** |
+
+O sinal sobreviveu ao período 2024-26, em que as alternativas ingênuas quebraram, e não é momentum disfarçado.
+
+**Somado aos 3 sistemas da seção 11** (rompimento BTC/ETH, rotação v2, NFI), com 1/4 cada e sem alavancagem: 24%/ano no OOS, DD -14%, Sharpe 1,70. Com os 3 sistemas eram 25%, DD -14% e Sharpe 1,54. Ou seja, o risco/retorno melhora um pouco e o retorno fica igual.

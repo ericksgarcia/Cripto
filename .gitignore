@@ -14,3 +14,4 @@ results/r11_returns*.parquet
 freqtrade/user_data/data_nfi/
 freqtrade/user_data/backtest_results_nfi/
 data/*.log
+data/metrics_1h/
