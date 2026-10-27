@@ -17,3 +17,4 @@ data/*.log
 data/metrics_1h/
 results/r28/*.parquet
 results/r31/*.parquet
+results/r31/**/*.parquet

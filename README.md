@@ -341,3 +341,44 @@ Foram 18 estratégias populares (r/algotrading, TradingView, YouTube, Santiment,
 - **Tudo que é intradiário (5m, 15m, 1h) destrói a conta com os custos**, de -23% a -99,8% ao ano.
 - **O que funciona é tendência no diário ou no 4h em BTC/ETH** (Gaussian, Supertrend+EMA200, RSI5>70, halving). É a mesma conclusão do nosso sistema de rompimento.
 - **As 3 melhores combinadas** (Gaussian + Supertrend/EMA200 + RSI5>70, em BTC e ETH): 42%/ano em 2018-26 com DD -21%, e 24%/ano no OOS 2024-26. Atenção: elas foram escolhidas como "as melhores de 18" olhando o período inteiro, então há viés de seleção. Somadas aos nossos 3 sistemas, o Sharpe vai de 1,54 para 1,64, com retorno igual (~25%/ano).
+
+## 14. Fase 7: motor de confluência com ML (1h, 15m, 5m)
+
+**Ideia:** juntar todas as técnicas num único placar por moeda/hora e deixar um LightGBM aprender quais combinações antecedem alta. A cada barra entram cerca de 130-170 sinais:
+- os 18 padrões gráficos em 3-4 tempos gráficos (tempos maiores só com barra fechada);
+- tendência multi-timeframe;
+- posicionamento (varejo, top traders, OI, fluxo agressor, funding);
+- contexto do BTC;
+- força relativa entre moedas;
+- horário;
+- anatomia de candle e volume.
+
+O treino é walk-forward (mensal no 1h, trimestral no 15m/5m), só com o passado e com embargo, então **toda previsão é fora da amostra**. São 31 perpétuos com métricas de posicionamento, de 2022-07 a 2026-10. Spot ou perp 1x, sem alavancagem: até 5 posições de 20%.
+
+**Execução realista** (`r30_execution.py`): compra limitada 0,2% abaixo do fechamento, válida por 1h, que só executa se o preço passar 0,05% além do limite (*trade-through*). Ordens não executadas são perdidas, o que captura a seleção adversa. Custo: 0,02% de maker na entrada + 0,07% na saída. Também foi testado entrar e sair a mercado (0,14% ida e volta).
+
+| Modelo (candle → horizonte) | Melhor config | 2022H2-26 /mês | 2024-26 /mês | Max DD |
+|---|---|---|---|---|
+| 1h → 4h | top 2%, limitada | 2,6% | 2,7% | -30% |
+| **1h → 12h** | **top 5%, limitada** | **5,1%** | **5,2%** | -32% |
+| **1h → 12h** | **top 2%, limitada** | **4,2%** | **4,6%** | **-20%** |
+| 1h → 12h | top 2%, a mercado | 3,9% | 3,5% | -23% |
+| 1h → 24h | top 5%, limitada | 3,8% | 4,7% | -45% |
+| 15m → 12h | top 2%, limitada | 3,4% | 4,1% | -31% |
+| 15m → 4h | top 2%, limitada | 2,1% | 2,0% | -39% |
+| 5m → 12h (10 maiores) | top 1% | — | 2,3% | -14% |
+| 5m → 4h (10 maiores) | top 1% | — | 2,3% | -23% |
+| Consenso 1h + 15m | top 5%, ambos | 4,0% | 4,8% | -25% |
+
+1h → 12h, top 2%, limitada, ano a ano: **2022H2 +17%, 2023 +64%, 2024 +139%, 2025 +50%, 2026 (até out) +23%**. Pior mês -11%. 17 de 51 meses foram negativos.
+
+**O que aprendemos**
+- **Candles menores que 1h não melhoraram:** trazem mais ruído e mais custo. Os sinais mais importantes do modelo são diários/4h e do BTC.
+- **A coincidência entre modelos** (1h + 15m) aumenta o ganho por operação (0,85% para 1,45%), mas reduz o número de oportunidades, e o retorno mensal não sobe.
+- **O ganho vem de timing de mercado, não da escolha da moeda.** Nas horas sinalizadas, a moeda escolhida rende quase o mesmo que a média das 31. Uma versão "só timing" (comprar a cesta nas 5% melhores horas) dá 3,4%/mês (2022H2-26) e 4,2%/mês (2024-26), com DD -25%. Com só BTC+ETH dá muito menos: o timing é mais forte nas alts.
+
+**Ressalvas importantes**
+- As 31 moedas foram escolhidas pelas mais negociadas ao longo de 2020-2026 (algum viés).
+- A execução com ordem limitada é modelada a partir de candles de 1h. A fila real do livro pode reduzir as execuções.
+- Foram testadas várias configurações (limiar, posições, execução). Os números vizinhos ficam entre 4% e 5%/mês, mas o melhor ponto tem algum otimismo.
+- **O resultado é concentrado em 2024.** O próximo passo obrigatório é paper trading ao vivo.

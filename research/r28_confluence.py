@@ -16,7 +16,7 @@ import numpy as np, pandas as pd, lightgbm as lgb
 from engine.core import ROOT, AGG
 from research.ta.patterns import detect_all, NAMES
 
-H = int(sys.argv[2]) if len(sys.argv) > 2 else 4
+H = int(sys.argv[2]) if __name__ == "__main__" and len(sys.argv) > 2 else 4
 OUT = ROOT / "results/r28"
 OUT.mkdir(exist_ok=True)
 COINS = [p.stem for p in (ROOT / "data/metrics_1h").glob("*.parquet") if p.stem != "HYPE"]
